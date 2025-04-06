@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}All Tasks{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Tasks</h1>
+    <a href="{% url 'task_create' %}" class="btn btn-primary">New Task</a>
+</div>
+
+<div class="row mb-4">
+    <div class="col">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control" placeholder="Search tasks..." value="{{ request.GET.search|default:'' }}">
+            </div>
+            <div class="col-md-3">
+                <select name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"i" %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="completed" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="false" {% if request.GET.completed == 'false' %}selected{% endif %}>Active</option>
+                    <option value="true" {% if request.GET.completed == 'true' %}selected{% endif %}>Completed</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary w-100">Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    {% for task in tasks %}
+        <div class="col-md-6">
+            <div class="card task-card {% if task.priority == 4 %}high-priority{% elif task.priority == 3 or task.priority == 2 %}medium-priority{% else %}low-priority{% endif %}">
+                <div class="card-body">
+                    <h5 class="card-title {% if task.completed %}completed{% endif %}">
+                        {{ task.title }}
+                    </h5>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        {% if task.category %}
+                            <span class="category-tag badge-{{ task.category.name|lower }}">{{ task.category.name }}</span>
+                        {% endif %}
+                        <span class="badge bg-{% if task.priority == 4 %}danger{% elif task.priority == 3 %}warning{% elif task.priority == 2 %}info{% else %}secondary{% endif %}">
+                            {{ task.get_priority_display }}
+                        </span>
+                    </h6>
+                    <p class="card-text">{{ task.description|truncatechars:100 }}</p>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            {% if task.due_date %}
+                                <small class="text-muted">Due: {{ task.due_date|date:"M d, Y" }}</small>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="{% url 'task_detail' task.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                            <a href="{% url 'task_update' task.id %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col">
+            <div class="alert alert-info">No tasks found.</div>
+        </div>
+    {% endfor %}
+</div>
+
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#">&laquo; First</a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" href="#">Previous</a>
+            </li>
+        {% endif %}
+
+        <li class="page-item disabled">
+            <a class="page-link" href="#">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#">Next</a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" href="#">Last &raquo;</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endblock %}

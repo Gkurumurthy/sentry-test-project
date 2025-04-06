@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Categories{% endblock %}
+
+{% block content %}
+<h1>Categories</h1>
+
+<div class="row">
+    {% for category in categories %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ category.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ category.description|default:"No description" }}</p>
+                    <p><strong>Tasks:</strong> {{ category.get_task_count }}</p>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col">
+            <div class="alert alert-info">No categories found.</div>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'home' %}" class="btn btn-primary">Back to Home</a>
+</div>
+{% endblock %}

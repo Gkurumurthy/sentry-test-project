@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Task Manager Home{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="jumbotron">
+            <h1 class="display-4">Task Manager</h1>
+            <p class="lead">Welcome to the Task Manager app. This app is designed to test Sentry error reporting and AI fix generation.</p>
+            <hr class="my-4">
+            <p>Use the links below to navigate through the app or trigger errors intentionally.</p>
+            <div class="d-flex gap-2">
+                <a class="btn btn-primary" href="{% url 'task_list' %}">View Tasks</a>
+                <a class="btn btn-secondary" href="{% url 'task_create' %}">Create Task</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Upcoming Tasks</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for task in upcoming_tasks %}
+                        <li class="list-group-item">
+                            <a href="{% url 'task_detail' task.id %}">{{ task.title }}</a>
+                            {% if task.due_date %}
+                                <span class="badge bg-info float-end">{{ task.due_date|date:"M d" }}</span>
+                            {% endif %}
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">No upcoming tasks</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Categories</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for category in categories %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="{% url 'category_detail' category.id %}">{{ category.name }}</a>
+                            <span class="badge bg-primary rounded-pill">{{ category.task_count }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">No categories</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
