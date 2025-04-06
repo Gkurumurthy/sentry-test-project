@@ -1,5 +1,5 @@
 from django.db import models
-# We're intentionally NOT importing timezone to create a bug
+from django.utils import timezone
 
 class Task(models.Model):
     title = models.CharField(max_length=200)
@@ -11,6 +11,7 @@ class Task(models.Model):
         return self.title
     
     def days_until_due(self):
-        # This will cause an error when due_date is None
-        # or when timezone is not imported
-        return (self.due_date - timezone.now()).days
+        if self.due_date:
+            return (self.due_date - timezone.now()).days
+        else:
+            return None
