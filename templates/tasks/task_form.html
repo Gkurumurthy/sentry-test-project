@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.id %}Edit Task{% else %}New Task{% endif %}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{% if form.instance.id %}Edit Task{% else %}New Task{% endif %}</h1>
+    <a href="{% url 'task_list' %}" class="btn btn-outline-secondary">Back to List</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="id_title" class="form-label">Title</label>
+                <input type="text" name="title" id="id_title" class="form-control" value="{{ form.instance.title|default:'' }}" required>
+                {% if form.title.errors %}
+                    <div class="text-danger">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="id_description" class="form-label">Description</label>
+                <textarea name="description" id="id_description" class="form-control" rows="3">{{ form.instance.description|default:'' }}</textarea>
+                {% if form.description.errors %}
+                    <div class="text-danger">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="id_category" class="form-label">Category</label>
+                    <select name="category" id="id_category" class="form-select">
+                        <option value="">-- No Category --</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" {% if form.instance.category_id == category.id %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="id_priority" class="form-label">Priority</label>
+                    <select name="priority" id="id_priority" class="form-select">
+                        {% for value, label in priority_choices %}
+                            <option value="{{ value }}" {% if form.instance.priority == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="id_due_date" class="form-label">Due Date (optional)</label>
+                    <input type="datetime-local" name="due_date" id="id_due_date" class="form-control" 
+                           value="{% if form.instance.due_date %}{{ form.instance.due_date|date:'Y-m-d' }}T{{ form.instance.due_date|time:'H:i' }}{% endif %}">
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <div class="form-check mt-4">
+                        <input type="checkbox" name="completed" id="id_completed" class="form-check-input" {% if form.instance.completed %}checked{% endif %}>
+                        <label for="id_completed" class="form-check-label">Mark as completed</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Save Task</button>
+                <a href="{% if form.instance.id %}{% url 'task_detail' form.instance.id %}{% else %}{% url 'task_list' %}{% endif %}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

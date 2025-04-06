@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ task.title }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>{{ task.title }}</h3>
+        {% if task.completed %}
+            <span class="badge bg-success">Completed</span>
+        {% else %}
+            <span class="badge bg-secondary">Active</span>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <p>{{ task.description|linebreaks }}</p>
+        
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h5>Details</h5>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <strong>Priority Status:</strong> 
+                        {% if is_high_priority %}
+                            <span class="badge bg-danger">High Priority</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Normal Priority</span>
+                        {% endif %}
+                    </li>
+                    {% if task.due_date %}
+                        <li class="list-group-item">
+                            <strong>Formatted Due Date:</strong> {{ formatted_due_date }}
+                        </li>
+                    {% endif %}
+                    <li class="list-group-item">
+                        <strong>Status Message:</strong> {{ status_message }}
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="col-md-6">
+                <h5>Actions</h5>
+                <form method="post" action="{% url 'task_toggle_completed' task.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-{% if task.completed %}warning{% else %}success{% endif %} mb-3">
+                        {% if task.completed %}Mark as Incomplete{% else %}Mark as Complete{% endif %}
+                    </button>
+                </form>
+                
+                <div class="mt-3">
+                    <a href="{% url 'task_list' %}" class="btn btn-outline-secondary">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

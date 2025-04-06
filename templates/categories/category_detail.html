@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} - Tasks{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ category.name }}</h1>
+    <a href="{% url 'category_list' %}" class="btn btn-outline-secondary">Back to Categories</a>
+</div>
+
+{% if category.description %}
+    <div class="alert alert-info mb-4">
+        {{ category.description }}
+    </div>
+{% endif %}
+
+<div class="alert alert-info mb-4">
+  <p>{{ category.description }}</p>
+  <p><strong>Average Priority:</strong> {{ average_priority }}</p>
+  <p><strong>Completion Stats:</strong> {{ completion_stats }}%</p>
+</div>
+
+<h2>Tasks in this category</h2>
+
+<div class="row">
+    {% for task in tasks %}
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title {% if task.completed %}completed{% endif %}">
+                        {{ task.title }}
+                    </h5>
+                    <div class="mb-2">
+                        <span class="badge bg-{% if task.priority == 4 %}danger{% elif task.priority == 3 %}warning{% elif task.priority == 2 %}info{% else %}secondary{% endif %}">
+                            {{ task.get_priority_display }}
+                        </span>
+                        {% if task.completed %}
+                            <span class="badge bg-success">Completed</span>
+                        {% endif %}
+                    </div>
+                    <p class="card-text">{{ task.description|truncatechars:100 }}</p>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            {% if task.due_date %}
+                                <small class="text-muted">Due: {{ task.due_date|date:"M d, Y" }}</small>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="{% url 'task_detail' task.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col">
+            <div class="alert alert-light">No tasks in this category.</div>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'task_create' %}" class="btn btn-primary">Add Task</a>
+</div>
+{% endblock %}
