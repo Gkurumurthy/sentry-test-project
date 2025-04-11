@@ -30,11 +30,15 @@ class Category(models.Model):
 
     def get_completion_stats(self):
         """Get completion statistics with KeyError bug"""
+        total = self.task_set.count()
+        completed = self.task_set.filter(completed=True).count()
+        completion_percentage = (completed / total) * 100 if total else 0
+
         stats = {
-            'total': self.task_set.count(),
-            'completed': self.task_set.filter(completed=True).count(),
+            'total': total,
+            'completed': completed,
+            'completion_percentage': completion_percentage
         }
-        # KeyError: 'completion_percentage' - this key doesn't exist
         return stats['completion_percentage']
 
 class Task(models.Model):
