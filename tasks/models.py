@@ -94,7 +94,8 @@ class Task(models.Model):
             message = "This task is overdue"
         elif self.due_date and self.due_date > timezone.now():
             message = "This task is upcoming"
-        # Missing else clause when task has no due date and is not completed
+        else:
+            message = "This task has no due date" #Added else block
         return message  # UnboundLocalError if none of the conditions are met
     
     def get_priority_class(self):
