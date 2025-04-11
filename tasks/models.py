@@ -76,14 +76,14 @@ class Task(models.Model):
     def is_high_priority(self):
         """Check if task is high priority - has AttributeError bug"""
         # Misspelled attribute name
-        return self.priorty >= 3  # AttributeError: 'Task' object has no attribute 'priorty'
+        return self.priority >= 3  # AttributeError: 'Task' object has no attribute 'priorty'
 
     def get_formatted_due_date(self):
         """Format the due date with a TypeError bug"""
         if self.due_date:
             days = self.days_until_due()
             # TypeError: can only concatenate str (not "int") to str
-            return "Due in " + days + " days"
+            return "Due in " + str(days) + " days"
         return "No due date"
 
     def get_status_message(self):
