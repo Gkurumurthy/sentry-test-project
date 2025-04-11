@@ -83,7 +83,7 @@ class Task(models.Model):
         if self.due_date:
             days = self.days_until_due()
             # TypeError: can only concatenate str (not "int") to str
-            return "Due in " + days + " days"
+            return "Due in " + str(days) + " days"
         return "No due date"
 
     def get_status_message(self):
